@@ -24,12 +24,10 @@ def login(req):
 
 @csrf_exempt
 def register(req):
-    if req.method !="POST":
-        return HttpResponse("Only POST method allowed")
-    print("RECIVED DATA:", req.POST)
-    user_name=req.POST.get("name")
-    user_email=req.POST.get("email")
-    user_password=req.POST.get("password")
+    if req.method =="POST":
+        user_name=req.POST.get("name")
+        user_email=req.POST.get("email")
+        user_password=req.POST.get("password")
 
     if not user_name or not user_email or not user_password:
         return HttpResponse("Missing Fields")
