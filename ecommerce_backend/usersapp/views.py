@@ -28,10 +28,6 @@ def register(req):
         user_name=req.POST.get("name")
         user_email=req.POST.get("email")
         user_password=req.POST.get("password")
-
-    if not user_name or not user_email or not user_password:
-        return HttpResponse("Missing Fields")
-    
     new_user=users.objects.create(name=user_name, email=user_email, password=user_password)
     return HttpResponse("User Created Successfully")
 
