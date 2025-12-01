@@ -9,24 +9,31 @@ import cloudinary
 
 @csrf_exempt
 def login(req):
+    if req.method !="POST":
+        return HttpResponse("Only POST allowed")
+    
+    useremail=req.POST.get("useremail")
+    userpassword=req.POST.get("userpassword")
     try:
-        useremail=req.POST.get("useremail")
-        userpassword=req.POST.get("userpassword")
-
         user=users.objects.get(email=useremail, password=userpassword)
-
-        if user:
-            return HttpResponse("Login Successfully")
-    except:
+        return HttpResponse("Login Successfully")
+    except users.DoesNotExist:
         return HttpResponse("Invalid Credentials")
         
 
 
 @csrf_exempt
 def register(req):
+    if req.method !="POST":
+        return HttpResponse("Only POST method allowed")
+    print("RECIVED DATA:", req.POST)
     user_name=req.POST.get("name")
     user_email=req.POST.get("email")
     user_password=req.POST.get("password")
+
+    if not user_name or not user_email or not user_password:
+        return HttpResponse("Missing Fields")
+    
     new_user=users.objects.create(name=user_name, email=user_email, password=user_password)
     return HttpResponse("User Created Successfully")
 
@@ -87,9 +94,9 @@ def admin(req):
             return HttpResponse("Product not Uploaded")
 
 @csrf_exempt
-def update_product(req,name):
+def update_product(req,title):
     try:
-        update=products.objects.get(name=name)
+        update=products.objects.get(title=title)
         if req.POST.get("name"):
             product_name=req.POST.get("name")
         if req.POST.get("price"):
@@ -97,12 +104,12 @@ def update_product(req,name):
         if req.POST.get("description"):
             product_description=req.POST.get("description")
         if req.FILES.get("image"):
-            product_image=req.FILED.get("image")
-        image_url=cloudinary.uploader.upload(product_image)
-        update.image=image_url['secure_url']
+            product_image=req.FILES.get("image")
+            image_url=cloudinary.uploader.upload(product_image)
+            update.image=image_url['secure_url']
         update.save()
-        return HttpResponse("Item Updated")
-    except:
+        return HttpResponse("Item Updated Successfully")
+    except products.DoesNotExist:
         return HttpResponse("Updating Failed")
 
 
@@ -114,5 +121,5 @@ def delete_product(req,title):
 
         delete_item.delete()
         return HttpResponse("Item Deleted Successfully")
-    except:
-        return HttpResponse("Delete Failed")
+    except products.DoesNotExist:
+        return HttpResponse("Item Not Found")
