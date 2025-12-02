@@ -6,30 +6,30 @@ from .models import products
 import cloudinary
 
 # Create your views here.
+@csrf_exempt
+def register(req):
+    if req.method =="POST":
+        name=req.POST.get("name")
+        email=req.POST.get("email")
+        password=req.POST.get("password")
+    new_user=users.objects.create(name=name, email=email, password=password)
+    return HttpResponse("User Created Successfully")
+
+
 
 @csrf_exempt
 def login(req):
-    if req.method !="POST":
-        return HttpResponse("Only POST allowed")
-    
-    useremail=req.POST.get("useremail")
-    userpassword=req.POST.get("userpassword")
+    if req.method =="POST":
+        email=req.POST.get("email")
+        password=req.POST.get("password")
     try:
-        user=users.objects.get(email=useremail, password=userpassword)
+        user=users.objects.get(email=email, password=password)
         return HttpResponse("Login Successfully")
     except users.DoesNotExist:
         return HttpResponse("Invalid Credentials")
         
 
 
-@csrf_exempt
-def register(req):
-    if req.method =="POST":
-        user_name=req.POST.get("name")
-        user_email=req.POST.get("email")
-        user_password=req.POST.get("password")
-    new_user=users.objects.create(name=user_name, email=user_email, password=user_password)
-    return HttpResponse("User Created Successfully")
 
 
 @csrf_exempt
